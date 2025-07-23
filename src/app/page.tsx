@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, JSX } from 'react';
 import { Heart, Calendar, Clock } from 'lucide-react';
 
 interface TimeLeft {
