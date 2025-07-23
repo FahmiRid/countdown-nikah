@@ -149,10 +149,10 @@ export default function NikahCountdown(): JSX.Element {
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-200">
             <Clock className="text-rose-400 mx-auto mb-4" size={32} />
             <p className="text-lg md:text-xl text-gray-700 leading-relaxed italic">
-              "Dan Segala sesuatu Kami ciptakan berpasang-pasangan agar kamu mengingat (kebesaran Allah). 
+              &quot;Dan Segala sesuatu Kami ciptakan berpasang-pasangan agar kamu mengingat (kebesaran Allah). 
               <br />
               <span className="text-rose-600 font-semibold">
-                Surah Az-Zariyat Ayat 49"
+                Surah Az-Zariyat Ayat 49&quot;
               </span>
             </p>
           </div>
@@ -161,10 +161,10 @@ export default function NikahCountdown(): JSX.Element {
         {/* Footer with romantic quote */}
         <div className="text-center animate-fade-in-up" style={{ animationDelay: '1s' }}>
           <p className="text-rose-600 text-lg font-medium mb-4">
-            "Love is not about how many days, months, or years you have been together..."
+            &quot;Love is not about how many days, months, or years you have been together...&quot;
           </p>
           <p className="text-rose-500 text-base">
-            "It's about how much you love each other every single day."
+            &quot;It&apos;s about how much you love each other every single day.&quot;
           </p>
         </div>
       </div>
