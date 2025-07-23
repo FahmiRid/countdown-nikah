@@ -1,103 +1,210 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useState, useEffect } from 'react';
+import { Heart, Calendar, Clock } from 'lucide-react';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+interface FloatingHeartProps {
+  delay: number;
+  duration: number;
+  size: string;
+  opacity: number;
+}
+
+const FloatingHeart: React.FC<FloatingHeartProps> = ({ delay, duration, size, opacity }) => (
+  <div 
+    className={`absolute animate-bounce heart-float ${size} text-pink-300`}
+    style={{ 
+      animationDelay: `${delay}s`,
+      animationDuration: `${duration}s`,
+      opacity: opacity,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`
+    }}
+  >
+    ❤️
+  </div>
+);
+
+interface CountdownItemProps {
+  label: string;
+  value: number;
+  color: string;
+}
+
+const CountdownItem: React.FC<CountdownItemProps> = ({ label, value, color }) => (
+  <div className="group transform hover:scale-110 transition-all duration-300">
+    <div className={`bg-gradient-to-br ${color} p-6 md:p-8 rounded-2xl shadow-2xl text-white relative overflow-hidden`}>
+      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+      <div className="relative z-10">
+        <div className="text-4xl md:text-6xl font-bold mb-2 animate-pulse">
+          {value.toString().padStart(2, '0')}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div className="text-sm md:text-lg font-semibold uppercase tracking-wider">
+          {label}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+export default function NikahCountdown(): JSX.Element {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const targetDate: number = new Date('2025-08-23T00:00:00').getTime();
+    
+    const timer = setInterval(() => {
+      const now: number = new Date().getTime();
+      const difference: number = targetDate - now;
+      
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const countdownItems: CountdownItemProps[] = [
+    { label: 'Days', value: timeLeft.days, color: 'from-rose-500 to-pink-500' },
+    { label: 'Hours', value: timeLeft.hours, color: 'from-pink-500 to-purple-500' },
+    { label: 'Minutes', value: timeLeft.minutes, color: 'from-purple-500 to-rose-500' },
+    { label: 'Seconds', value: timeLeft.seconds, color: 'from-rose-500 to-pink-600' }
+  ];
+
+  return (
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        {/* Floating Hearts */}
+        {Array.from({ length: 15 }, (_, i) => (
+          <FloatingHeart 
+            key={i}
+            delay={i * 0.5}
+            duration={3 + (i % 3)}
+            size={i % 3 === 0 ? 'text-2xl' : i % 3 === 1 ? 'text-lg' : 'text-sm'}
+            opacity={0.3 + (i % 3) * 0.2}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        ))}
+        
+        {/* Gradient Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-r from-rose-300 to-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '4s' }}></div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8 text-center">
+        
+        {/* Header with Animation */}
+        <div className="mb-12 animate-fade-in">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <Heart className="text-rose-500 animate-pulse" size={40} />
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+              Our Nikah Day
+            </h1>
+            <Heart className="text-rose-500 animate-pulse" size={40} />
+          </div>
+          
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Calendar className="text-rose-400" size={24} />
+            <p className="text-2xl md:text-3xl font-semibold text-rose-700">
+              23 August 2025
+            </p>
+          </div>
+          
+          <div className="inline-block bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-3 rounded-full font-bold text-lg md:text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+            #KESHAYANGANFAHMI
+          </div>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-12">
+          {countdownItems.map((item, index) => (
+            <div key={item.label} style={{ animationDelay: `${index * 0.2}s` }}>
+              <CountdownItem {...item} />
+            </div>
+          ))}
+        </div>
+
+        {/* Message */}
+        <div className="max-w-2xl mx-auto mb-8 animate-fade-in-up">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-200">
+            <Clock className="text-rose-400 mx-auto mb-4" size={32} />
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed italic">
+              "Dan Segala sesuatu Kami ciptakan berpasang-pasangan agar kamu mengingat (kebesaran Allah). 
+              <br />
+              <span className="text-rose-600 font-semibold">
+                Surah Az-Zariyat Ayat 49"
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Footer with romantic quote */}
+        <div className="text-center animate-fade-in-up" style={{ animationDelay: '1s' }}>
+          <p className="text-rose-600 text-lg font-medium mb-4">
+            "Love is not about how many days, months, or years you have been together..."
+          </p>
+          <p className="text-rose-500 text-base">
+            "It's about how much you love each other every single day."
+          </p>
+        </div>
+      </div>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes heart-float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          25% { transform: translateY(-20px) rotate(5deg); }
+          50% { transform: translateY(-10px) rotate(-5deg); }
+          75% { transform: translateY(-15px) rotate(3deg); }
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 1s ease-out forwards;
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 1s ease-out forwards;
+        }
+        
+        .heart-float {
+          animation: heart-float 4s ease-in-out infinite;
+        }
+        
+        /* Glassmorphism effect */
+        .backdrop-blur-sm {
+          backdrop-filter: blur(8px);
+        }
+      `}</style>
     </div>
   );
 }
